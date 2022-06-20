@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
+import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.util.GameProfile;
@@ -60,6 +61,20 @@ public class VelocityListeners extends AuthenticListeners<VelocityLibrePremium, 
         );
 
     }
+
+    @Subscribe(order = PostOrder.FIRST)
+    public void onServerPreConnect(ServerPreConnectEvent event) {
+        if (!plugin.getAuthorizationProvider().isAuthorized(event.getPlayer())) {
+            event.getResult().getServer().ifPresentOrElse(registeredServer -> {
+                if (!plugin.getConfiguration().getLimbo().contains(registeredServer.getServerInfo().getName())) {
+                    event.setResult(ServerPreConnectEvent.ServerResult.denied());
+                }
+            }, () -> event.setResult(ServerPreConnectEvent.ServerResult.denied()));
+        }
+    }
+
+
+
 
     @Subscribe(order = PostOrder.LAST)
     public void chooseServer(PlayerChooseInitialServerEvent event) {
