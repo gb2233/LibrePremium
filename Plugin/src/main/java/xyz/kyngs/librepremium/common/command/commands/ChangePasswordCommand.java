@@ -27,6 +27,9 @@ public class ChangePasswordCommand<P> extends Command<P> {
         var hashed = user.getHashedPassword();
         var crypto = getCrypto(hashed);
 
+        if (!plugin.validPassword(newPass))
+            throw new InvalidCommandArgument(getMessage("error-forbidden-password"));
+
         if (!crypto.matches(oldPass, hashed)) {
             throw new InvalidCommandArgument(getMessage("error-password-wrong"));
         }

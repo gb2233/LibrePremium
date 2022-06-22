@@ -245,10 +245,56 @@ public class DefaultConfiguration {
     );
 
     public static final ConfigurationKey<Integer> MINIMUM_PASSWORD_LENGTH = new ConfigurationKey<>(
-            "minimum-password-length",
-            -1,
-            "The minimum length of a password. Set to negative to disable.",
-            ConfigurateHelper::getInt
+        "minimum-password-length",
+        -1,
+        "The minimum length of a password. Set to negative to disable.",
+        ConfigurateHelper::getInt
+    );
+
+    public static final ConfigurationKey<Integer> MAXIMUM_PASSWORD_LENGTH = new ConfigurationKey<>(
+        "maximum-password-length",
+        128,
+        "The maximum length of a password. Set to negative to disable.",
+        ConfigurateHelper::getInt
+    );
+
+    public static final ConfigurationKey<Integer> MAX_REG_PER_IP = new ConfigurationKey<>(
+        "max-reg-per-ip",
+        5,
+        "The maximum registrations from a single IP. Set to negative to disable.",
+        ConfigurateHelper::getInt
+    );
+
+    public static final ConfigurationKey<Boolean> TEMPBAN_ENABLED = new ConfigurationKey<>(
+        "tempban.enabled",
+        false,
+        "If enabled, then after multiple login tries the offending IP will get banned",
+        ConfigurateHelper::getBoolean
+    );
+
+    public static final ConfigurationKey<String> TEMPBAN_COMMAND = new ConfigurationKey<>(
+        "tempban.command",
+        "gtempbanip %ip% %duration% %reason%",
+        "Command used for the tempbans.",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<Integer> TEMPBAN_MAXTRIES = new ConfigurationKey<>(
+        "tempban.maxtries",
+        15,
+        "Maximum attempts before ip ban.",
+        ConfigurateHelper::getInt
+    );
+    public static final ConfigurationKey<String> TEMPBAN_LENGTH = new ConfigurationKey<>(
+        "tempban.length",
+        "480min",
+        "Ban length in minutes.",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<Integer> TEMPBAN_COUNTER_RESET = new ConfigurationKey<>(
+        "tempban.minutesBeforeCounterReset",
+        240,
+        "Time before the tries reset to 0.",
+        ConfigurateHelper::getInt
     );
 
 }

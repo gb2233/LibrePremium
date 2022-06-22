@@ -106,10 +106,29 @@ public class DefaultMessages {
     );
 
     public static final ConfigurationKey<String> KICK_ERROR_PASSWORD_WRONG = new ConfigurationKey<>(
-            "kick-error-password-wrong",
-            "Wrong password!",
-            "This message is displayed when the player is kicked because they authorize with wrong password.",
-            ConfigurateHelper::getString
+        "kick-error-password-wrong",
+        "Wrong password!",
+        "This message is displayed when the player is kicked because they authorize with wrong password.",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> BAN_ERROR_PASSWORD_WRONG_MULTIPLE = new ConfigurationKey<>(
+        "ban-error-password-wrong-multiple",
+        "Multiple wrong passwords, please try again later!",
+        "This message is displayed when the player's ip is tempbanned because they authorize with wrong password multiple times.",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> MORE_REGS_PER_IP_THAN_ALLOWED = new ConfigurationKey<>(
+        "more-regs-pre-ip-than-allowed",
+        "You have more alt accounts than allowed",
+        "This message is displayed when the player's there's more registration from a given IP tha allowed",
+        ConfigurateHelper::getString
+    );
+
+    public static final ConfigurationKey<String> KICK_ERROR_TOTP_WRONG = new ConfigurationKey<>(
+        "kick-error-totp-wrong",
+        "Wrong 2fa code!",
+        "This message is displayed when the player is kicked because they authorize with wrong 2fa key.",
+        ConfigurateHelper::getString
     );
 
     /*
@@ -202,7 +221,7 @@ public class DefaultMessages {
 
     public static final ConfigurationKey<String> ERROR_FORBIDDEN_PASSWORD = new ConfigurationKey<>(
             "error-forbidden-password",
-            "The password is too short and/or is not allowed!",
+            "The password is too short, too long and/or is not allowed!",
             "This message is displayed when the player tries to register with a password that is too short or forbidden.",
             ConfigurateHelper::getString
     );
@@ -443,6 +462,9 @@ public class DefaultMessages {
                     Last Seen: %last_seen%
                     Joined: %joined%
                     2FA: %2fa%
+                    Email: %email%
+                    IP: %ip%
+                    Other Accounts: %otheraccounts%
                     """,
             "This message is displayed when the player's information is requested.",
             ConfigurateHelper::getString

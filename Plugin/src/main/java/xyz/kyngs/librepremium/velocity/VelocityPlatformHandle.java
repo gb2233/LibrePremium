@@ -4,6 +4,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import xyz.kyngs.librepremium.api.PlatformHandle;
 
 import java.util.UUID;
@@ -60,5 +61,21 @@ public class VelocityPlatformHandle implements PlatformHandle<Player, Registered
     @Override
     public Class<Player> getPlayerClass() {
         return Player.class;
+    }
+
+    @Override
+    public String getIP(Player player) {
+        return player.getRemoteAddress().getAddress().getHostAddress();
+    }
+
+    @Override
+    public void tempbanIP(Player player, TextComponent reason) {
+        var proxy = plugin.getServer();
+        proxy.getCommandManager().executeAsync(proxy.getConsoleCommandSource(),
+            plugin.getConfiguration().getTempbanCommand()
+                .replace("%ip%",player.getRemoteAddress().getAddress().getHostAddress())
+                .replace("%duration%", plugin.getConfiguration().getTempbanLength())
+                .replace("%reason%",reason.content())
+        );
     }
 }

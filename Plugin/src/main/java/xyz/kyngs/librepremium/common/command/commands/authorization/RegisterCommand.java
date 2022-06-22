@@ -20,6 +20,7 @@ public class RegisterCommand<P> extends AuthorizationCommand<P> {
         checkUnauthorized(player);
 
         if (user.isRegistered()) throw new InvalidCommandArgument(getMessage("error-already-registered"));
+        if (plugin.getAuthorizationProvider().shouldBlockReg(player)) throw new InvalidCommandArgument(getMessage("more-regs-pre-ip-than-allowed"));
         if (!password.contentEquals(passwordRepeat))
             throw new InvalidCommandArgument(getMessage("error-password-not-match"));
         if (!plugin.validPassword(password))

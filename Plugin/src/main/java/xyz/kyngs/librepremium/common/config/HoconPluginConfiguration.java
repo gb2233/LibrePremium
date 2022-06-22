@@ -185,6 +185,37 @@ public class HoconPluginConfiguration implements PluginConfiguration {
         return get(MINIMUM_PASSWORD_LENGTH);
     }
 
+    @Override
+    public int maximumPasswordLength() {
+        return get(MAXIMUM_PASSWORD_LENGTH);
+    }
+    @Override
+    public int maxRegPerIP() {
+        return get(MAX_REG_PER_IP);
+    }
+    @Override
+    public boolean tempbanEnabled() {
+        return get(TEMPBAN_ENABLED);
+    }
+    @Override
+    public String getTempbanCommand() {
+        return get(TEMPBAN_COMMAND);
+    }
+    @Override
+    public String getTempbanLength() {
+        return get(TEMPBAN_LENGTH);
+    }
+
+    @Override
+    public int getTempbanMaxTries() {
+        return get(TEMPBAN_MAXTRIES);
+    }
+
+    @Override
+    public int getTempbanCounterReset() {
+        return get(TEMPBAN_COUNTER_RESET);
+    }
+
     public <T> T get(ConfigurationKey<T> key) {
         return helper.get(key);
     }

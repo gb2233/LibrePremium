@@ -110,7 +110,7 @@ public abstract class AuthenticLibrePremium<P, S> implements LibrePremiumPlugin<
 
     @Override
     public boolean validPassword(String password) {
-        var length = password.length() >= configuration.minimumPasswordLength();
+        var length = password.length() >= configuration.minimumPasswordLength() && password.length() <= configuration.maximumPasswordLength();
 
         if (!length) {
             return false;
@@ -232,7 +232,7 @@ public abstract class AuthenticLibrePremium<P, S> implements LibrePremiumPlugin<
         logger.info("Validating tables");
 
         try {
-            databaseProvider.validateTables();
+            databaseProvider.validateTables(configuration);
         } catch (Exception e) {
             var cause = GeneralUtil.getFurthestCause(e);
             logger.error("Failed to validate tables! Cause: %s: %s".formatted(cause.getClass().getSimpleName(), cause.getMessage()));

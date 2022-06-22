@@ -32,6 +32,11 @@ public class LoginCommand<P> extends AuthorizationCommand<P> {
             if (plugin.getConfiguration().kickOnWrongPassword()) {
                 plugin.getPlatformHandle().kick(player, getMessage("kick-error-password-wrong"));
             }
+            if (plugin.getAuthorizationProvider().shouldTempbanIP(player)){
+                plugin.getPlatformHandle().tempbanIP(player, getMessage("ban-error-password-wrong-multiple"));
+            }else {
+                plugin.getAuthorizationProvider().increaseCount(player,user.getLastNickname());
+            }
             throw new InvalidCommandArgument(getMessage("error-password-wrong"));
         }
 

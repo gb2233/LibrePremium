@@ -108,6 +108,7 @@ public class VelocityLibrePremium extends AuthenticLibrePremium<Player, Register
 
     @Override
     public void authorize(Player player, User user, Audience audience) {
+
         try {
             player
                     .createConnectionRequest(
@@ -219,6 +220,15 @@ public class VelocityLibrePremium extends AuthenticLibrePremium<Player, Register
                     .repeat(getConfiguration().milliSecondsToRefreshNotification(), TimeUnit.MILLISECONDS)
                     .schedule();
         }
+
+        var ipLoginFailureExpiryMinutes = getConfiguration().getTempbanCounterReset();
+
+        if (ipLoginFailureExpiryMinutes > 0) {
+            server.getScheduler().buildTask(this, () -> getAuthorizationProvider().performCleanup())
+                .repeat(ipLoginFailureExpiryMinutes, TimeUnit.MINUTES)
+                .schedule();
+        }
+
     }
 
     @Subscribe
