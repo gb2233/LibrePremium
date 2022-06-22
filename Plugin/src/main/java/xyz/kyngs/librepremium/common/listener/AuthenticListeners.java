@@ -161,7 +161,9 @@ public class AuthenticListeners<Plugin extends AuthenticLibrePremium<P, S>, P, S
                         username,
                         Timestamp.valueOf(LocalDateTime.now()),
                         Timestamp.valueOf(LocalDateTime.now()),
-                        null
+                        null,
+                    null,
+                    null
                 );
             } else {
                 user = new User(
@@ -171,7 +173,9 @@ public class AuthenticListeners<Plugin extends AuthenticLibrePremium<P, S>, P, S
                         username,
                         Timestamp.valueOf(LocalDateTime.now()),
                         Timestamp.valueOf(LocalDateTime.now()),
-                        null
+                        null,
+                    null,
+                    null
                 );
             }
 

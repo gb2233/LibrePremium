@@ -10,12 +10,12 @@ import xyz.kyngs.librepremium.api.configuration.PluginConfiguration;
 import xyz.kyngs.librepremium.api.crypto.HashedPassword;
 import xyz.kyngs.librepremium.api.database.ReadWriteDatabaseProvider;
 import xyz.kyngs.librepremium.api.database.User;
+import xyz.kyngs.librepremium.common.config.HoconPluginConfiguration;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
@@ -41,7 +41,7 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
         );
     }
 
-    public void validateTables() {
+    public void validateTables(HoconPluginConfiguration configuration) {
         easyDB.runTaskSync(connection -> {
             connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS librepremium_data(" +
@@ -56,14 +56,18 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
                             ")"
             ).executeUpdate();
 
-            try {
-                connection.prepareStatement("ALTER TABLE librepremium_data ADD COLUMN secret VARCHAR(255) NULL DEFAULT NULL")
-                        .executeUpdate();
-            } catch (SQLException e) {
-                if (!e.getSQLState().equals("42S21")) {
-                    throw e;
-                }
-            } //FIXME: This is a horrible approach.
+            ResultSet resultSet = connection.prepareStatement("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='librepremium_data' and TABLE_SCHEMA='" + configuration.getDatabaseName() + "'")
+                     .executeQuery();
+            ArrayList<String> columns = new ArrayList<>();
+            while (resultSet.next()) {
+                columns.add(resultSet.getString(1));
+            }
+            if (!columns.contains("secret"))
+                connection.prepareStatement("ALTER TABLE librepremium_data ADD COLUMN secret VARCHAR(255) NULL DEFAULT NULL").executeUpdate();
+            if (!columns.contains("email"))
+                connection.prepareStatement("ALTER TABLE librepremium_data ADD COLUMN email VARCHAR(255) NULL DEFAULT NULL").executeUpdate();
+            if (!columns.contains("ip"))
+                connection.prepareStatement("ALTER TABLE librepremium_data ADD COLUMN ip VARCHAR(255) NULL DEFAULT NULL").executeUpdate();
 
         });
     }
@@ -119,6 +123,8 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
                 var joinDate = rs.getTimestamp("joined");
                 var lastSeen = rs.getTimestamp("last_seen");
                 var secret = rs.getString("secret");
+                var email = rs.getString("email");
+                var ip = rs.getString("ip");
 
                 return new User(
                         id,
@@ -131,7 +137,9 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
                         lastNickname,
                         joinDate,
                         lastSeen,
-                        secret
+                        secret,
+                        email,
+                        ip
                 );
             } else return null;
 
@@ -151,9 +159,28 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
         });
     }
 
+    @Override
+    public List<User> getUsersByIP(String ipAddress) {
+        return easyDB.runFunctionSync(connection -> {
+            var ps = connection.prepareStatement("SELECT * FROM librepremium_data WHERE ip=?");
+
+            ps.setString(1, ipAddress);
+
+            var rs = ps.executeQuery();
+
+            return getUsersFromResult(rs);
+        });
+    }
+
     @Nullable
     private User getUserFromResult(ResultSet rs) throws SQLException {
-        if (rs.next()) {
+        List<User> users = getUsersFromResult(rs);
+        return  users.isEmpty() ? null : users.get(0);
+    }
+
+    private List<User> getUsersFromResult(ResultSet rs) throws SQLException {
+        List<User> commonIPusers = new ArrayList<>();
+        while (rs.next()) {
             var id = UUID.fromString(rs.getString("uuid"));
             var premiumUUID = rs.getString("premium_uuid");
             var hashedPassword = rs.getString("hashed_password");
@@ -162,27 +189,33 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
             var lastNickname = rs.getString("last_nickname");
             var joinDate = rs.getTimestamp("joined");
             var lastSeen = rs.getTimestamp("last_seen");
+            var email = rs.getString("email");
+            var ip = rs.getString("ip");
 
-            return new User(
-                    id,
-                    premiumUUID == null ? null : UUID.fromString(premiumUUID),
-                    hashedPassword == null ? null : new HashedPassword(
-                            hashedPassword,
-                            salt,
-                            algo
-                    ),
-                    lastNickname,
-                    joinDate,
-                    lastSeen,
-                    rs.getString("secret")
-            );
-        } else return null;
+            commonIPusers.add(new User(
+                id,
+                premiumUUID == null ? null : UUID.fromString(premiumUUID),
+                hashedPassword == null ? null : new HashedPassword(
+                    hashedPassword,
+                    salt,
+                    algo
+                ),
+                lastNickname,
+                joinDate,
+                lastSeen,
+                rs.getString("secret"),
+                email,
+                ip
+
+            ));
+        }
+        return commonIPusers;
     }
 
     @Override
     public void insertUser(User user) {
         easyDB.runTaskSync(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO librepremium_data(uuid, premium_uuid, hashed_password, salt, algo, last_nickname, joined, last_seen, secret) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            var ps = connection.prepareStatement("INSERT INTO librepremium_data(uuid, premium_uuid, hashed_password, salt, algo, last_nickname, joined, last_seen, secret,email,ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)");
 
             insertToStatement(ps, user);
 
@@ -193,7 +226,7 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
     @Override
     public void insertUsers(Collection<User> users) {
         easyDB.runTaskSync(connection -> {
-            var ps = connection.prepareStatement("INSERT IGNORE INTO librepremium_data(uuid, premium_uuid, hashed_password, salt, algo, last_nickname, joined, last_seen, secret) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            var ps = connection.prepareStatement("INSERT IGNORE INTO librepremium_data(uuid, premium_uuid, hashed_password, salt, algo, last_nickname, joined, last_seen, secret,email,ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)");
 
             for (User user : users) {
                 insertToStatement(ps, user);
@@ -215,12 +248,14 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
         ps.setTimestamp(7, user.getJoinDate());
         ps.setTimestamp(8, user.getLastSeen());
         ps.setString(9, user.getSecret());
+        ps.setString(10, user.getEmail());
+        ps.setString(11, user.getIP());
     }
 
     @Override
     public void updateUser(User user) {
         easyDB.runTaskSync(connection -> {
-            var ps = connection.prepareStatement("UPDATE librepremium_data SET premium_uuid=?, hashed_password=?, salt=?, algo=?, last_nickname=?, joined=?, last_seen=?, secret=? WHERE uuid=?");
+            var ps = connection.prepareStatement("UPDATE librepremium_data SET premium_uuid=?, hashed_password=?, salt=?, algo=?, last_nickname=?, joined=?, last_seen=?, secret=?, email=?, ip=? WHERE uuid=?");
 
             ps.setString(1, user.getPremiumUUID() == null ? null : user.getPremiumUUID().toString());
             ps.setString(2, user.getHashedPassword() == null ? null : user.getHashedPassword().hash());
@@ -230,7 +265,9 @@ public class MySQLDatabaseProvider implements ReadWriteDatabaseProvider {
             ps.setTimestamp(6, user.getJoinDate());
             ps.setTimestamp(7, user.getLastSeen());
             ps.setString(8, user.getSecret());
-            ps.setString(9, user.getUuid().toString());
+            ps.setString(9, user.getEmail());
+            ps.setString(10, user.getIP());
+            ps.setString(11, user.getUuid().toString());
 
             ps.executeUpdate();
         });

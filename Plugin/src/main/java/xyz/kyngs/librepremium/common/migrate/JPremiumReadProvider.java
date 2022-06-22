@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 public class JPremiumReadProvider extends MySQLReadProvider {
@@ -33,6 +34,11 @@ public class JPremiumReadProvider extends MySQLReadProvider {
     @Override
     public User getByPremiumUUID(UUID uuid) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getUsersByIP(String ipAddress) {
+        return null;
     }
 
     @Override
@@ -76,7 +82,7 @@ public class JPremiumReadProvider extends MySQLReadProvider {
                             lastNickname,
                             firstSeen,
                             lastSeen,
-                            null));
+                            null,null,null));
 
                 } catch (Exception e) {
                     logger.error("Failed to read user from JPremium db, omitting");

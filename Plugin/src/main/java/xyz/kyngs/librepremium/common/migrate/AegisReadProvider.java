@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 public class AegisReadProvider extends MySQLReadProvider {
@@ -34,6 +35,11 @@ public class AegisReadProvider extends MySQLReadProvider {
     @Override
     public User getByPremiumUUID(UUID uuid) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getUsersByIP(String ipAddress) {
+        return null;
     }
 
     @Override
@@ -70,7 +76,7 @@ public class AegisReadProvider extends MySQLReadProvider {
                             nickname,
                             Timestamp.valueOf(LocalDateTime.now()),
                             Timestamp.valueOf(LocalDateTime.now()),
-                            null));
+                            null,null,null));
 
                 } catch (Exception e) {
                     logger.error("Failed to read user from Aegis db, omitting");

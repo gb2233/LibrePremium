@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 public class AuthMeReadProvider extends MySQLReadProvider {
@@ -36,6 +37,11 @@ public class AuthMeReadProvider extends MySQLReadProvider {
     }
 
     @Override
+    public List<User> getUsersByIP(String ipAddress) {
+        return null;
+    }
+
+    @Override
     public Collection<User> getAllUsers() {
         return easyDB.runFunctionSync(connection -> {
             var ps = connection.prepareStatement("SELECT * FROM `%s`".formatted(tableName));
@@ -50,6 +56,8 @@ public class AuthMeReadProvider extends MySQLReadProvider {
                     var passwordRaw = rs.getString("password");
                     var lastSeen = rs.getObject("lastlogin", Long.class);
                     var firstSeen = rs.getObject("regdate", Long.class);
+                    var ip = rs.getString("ip");
+                    var email = rs.getString("email");
 
                     if (nickname == null) continue;
 
@@ -79,7 +87,7 @@ public class AuthMeReadProvider extends MySQLReadProvider {
                                     nickname,
                                     firstSeen == null ? null : new Timestamp(firstSeen),
                                     lastSeen == null ? null : new Timestamp(lastSeen),
-                                    null)
+                                    null,email,ip)
                     );
 
                 } catch (Exception e) {

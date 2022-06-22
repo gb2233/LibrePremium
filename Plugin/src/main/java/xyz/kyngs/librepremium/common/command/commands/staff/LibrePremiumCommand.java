@@ -5,18 +5,21 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import xyz.kyngs.librepremium.api.configuration.CorruptedConfigurationException;
 import xyz.kyngs.librepremium.api.database.User;
 import xyz.kyngs.librepremium.api.event.events.PremiumLoginSwitchEvent;
 import xyz.kyngs.librepremium.common.AuthenticLibrePremium;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 import xyz.kyngs.librepremium.common.event.events.AuthenticPremiumLoginSwitchEvent;
+import xyz.kyngs.librepremium.common.util.EmailMasker;
 import xyz.kyngs.librepremium.common.util.GeneralUtil;
 
 import javax.annotation.Syntax;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static xyz.kyngs.librepremium.common.AuthenticLibrePremium.DATE_TIME_FORMATTER;
 
@@ -77,13 +80,39 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandCompletion("@players")
     public void onUserInfo(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
-
+        List<User> alts = getUserAlts(user.getIP());
+        StringBuilder altList = new StringBuilder();
+        alts.forEach(a-> altList.append(a.getLastNickname()).append(" "));
         audience.sendMessage(getMessage("info-user",
-                "%uuid%", user.getUuid().toString(),
-                "%premium_uuid%", user.getPremiumUUID() == null ? "N/A" : user.getPremiumUUID().toString(),
-                "%last_seen%", DATE_TIME_FORMATTER.format(user.getLastSeen().toLocalDateTime()),
-                "%joined%", DATE_TIME_FORMATTER.format(user.getJoinDate().toLocalDateTime()),
-                "%2fa%", user.getSecret() != null ? "Enabled" : "Disabled"
+            "%uuid%", user.getUuid().toString(),
+            "%premium_uuid%", user.getPremiumUUID() == null ? "N/A" : user.getPremiumUUID().toString(),
+            "%last_seen%", DATE_TIME_FORMATTER.format(user.getLastSeen().toLocalDateTime()),
+            "%joined%", DATE_TIME_FORMATTER.format(user.getJoinDate().toLocalDateTime()),
+            "%2fa%", user.getSecret() != null ? "Enabled" : "Disabled",
+            "%email%", user.getEmail() == null ? "N/A" : EmailMasker.mask(user.getEmail()),
+            "%ip%", "Hidden",
+            "%otheraccounts%", altList.toString()
+        ));
+    }
+    //FIXME: This is really not how hiding the IP address should work
+    @Subcommand("user privateinfo")
+    @CommandPermission("librepremium.user.private.info")
+    @Syntax("<name>")
+    @CommandCompletion("@players")
+    public void onUserPrivateInfo(Audience audience, String name) {
+        var user = getUserOtherWiseInform(name);
+        List<User> alts = getUserAlts(user.getIP());
+        StringBuilder altList = new StringBuilder();
+        alts.forEach(a-> altList.append(a.getLastNickname()).append(" "));
+        audience.sendMessage(getMessage("info-user",
+            "%uuid%", user.getUuid().toString(),
+            "%premium_uuid%", user.getPremiumUUID() == null ? "N/A" : user.getPremiumUUID().toString(),
+            "%last_seen%", DATE_TIME_FORMATTER.format(user.getLastSeen().toLocalDateTime()),
+            "%joined%", DATE_TIME_FORMATTER.format(user.getJoinDate().toLocalDateTime()),
+            "%2fa%", user.getSecret() != null ? "Enabled" : "Disabled",
+            "%email%", user.getEmail() == null ? "N/A" : user.getEmail(),
+            "%ip%", user.getIP() == null ? "N/A" : user.getIP(),
+            "%otheraccounts%", altList.toString()
         ));
     }
 
@@ -212,7 +241,9 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
                 name,
                 Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.now()),
-                null
+                null,
+            null,
+            null
         );
 
         getDatabaseProvider().insertUser(user);

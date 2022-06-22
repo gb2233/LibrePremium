@@ -6,6 +6,9 @@ import xyz.kyngs.librepremium.common.AuthenticLibrePremium;
 import xyz.kyngs.librepremium.common.command.Command;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StaffCommand<P> extends Command<P> {
     public StaffCommand(AuthenticLibrePremium<P, ?> plugin) {
         super(plugin);
@@ -18,6 +21,14 @@ public class StaffCommand<P> extends Command<P> {
         if (user == null) throw new InvalidCommandArgument(getMessage("error-unknown-user"));
 
         return user;
+    }
+
+    @NotNull
+    protected List<User> getUserAlts(String ip) {
+        if (ip == null)
+            return new ArrayList<>();
+        else
+            return plugin.getDatabaseProvider().getUsersByIP(ip);
     }
 
     protected void requireOffline(User user) {

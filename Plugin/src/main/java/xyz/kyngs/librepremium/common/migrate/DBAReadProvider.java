@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 public class DBAReadProvider extends MySQLReadProvider {
@@ -30,6 +31,11 @@ public class DBAReadProvider extends MySQLReadProvider {
     @Override
     public User getByPremiumUUID(UUID uuid) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getUsersByIP(String ipAddress) {
+        return null;
     }
 
     @Override
@@ -67,7 +73,7 @@ public class DBAReadProvider extends MySQLReadProvider {
                                     name,
                                     rs.getTimestamp("firstjoin"),
                                     rs.getTimestamp("lastjoin"),
-                                    null)
+                                    null,null,null)
                     );
 
                 } catch (Exception e) {
