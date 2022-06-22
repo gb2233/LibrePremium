@@ -9,7 +9,8 @@ import xyz.kyngs.librepremium.common.command.Command;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 import xyz.kyngs.librepremium.common.event.events.AuthenticPasswordChangeEvent;
 
-@CommandAlias("changepassword|changepass|passwd|passch")
+@CommandAlias("changepassword|changepass|passwd|passch|changepw")
+@CommandPermission("librepremium.player.changepassword")
 public class ChangePasswordCommand<P> extends Command<P> {
     public ChangePasswordCommand(AuthenticLibrePremium<P, ?> plugin) {
         super(plugin);

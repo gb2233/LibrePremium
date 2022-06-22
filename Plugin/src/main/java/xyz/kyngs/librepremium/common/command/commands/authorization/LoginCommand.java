@@ -7,6 +7,7 @@ import xyz.kyngs.librepremium.common.AuthenticLibrePremium;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 
 @CommandAlias("login|l")
+@CommandPermission("librepremium.player.login")
 public class LoginCommand<P> extends AuthorizationCommand<P> {
 
     public LoginCommand(AuthenticLibrePremium<P, ?> premium) {

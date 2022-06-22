@@ -1,7 +1,10 @@
 package xyz.kyngs.librepremium.api;
 
+import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -28,4 +31,7 @@ public interface PlatformHandle<P, S> {
 
     Class<P> getPlayerClass();
 
+    String getIP(P player);
+
+    void tempbanIP(P player, TextComponent reason);
 }

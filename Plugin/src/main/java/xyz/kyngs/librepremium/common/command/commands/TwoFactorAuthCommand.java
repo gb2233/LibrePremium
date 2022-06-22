@@ -1,6 +1,7 @@
 package xyz.kyngs.librepremium.common.command.commands;
 
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import net.kyori.adventure.audience.Audience;
 import xyz.kyngs.librepremium.api.database.User;
@@ -9,6 +10,7 @@ import xyz.kyngs.librepremium.common.command.Command;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 
 @CommandAlias("2fa|2fauth|2fauthcode")
+@CommandPermission("librepremium.player.2fa")
 public class TwoFactorAuthCommand<P> extends Command<P> {
     public TwoFactorAuthCommand(AuthenticLibrePremium<P, ?> plugin) {
         super(plugin);

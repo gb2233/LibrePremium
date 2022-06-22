@@ -1,8 +1,13 @@
 package xyz.kyngs.librepremium.common.command.commands.authorization;
 
+import org.jetbrains.annotations.NotNull;
+import xyz.kyngs.librepremium.api.database.User;
 import xyz.kyngs.librepremium.common.AuthenticLibrePremium;
 import xyz.kyngs.librepremium.common.command.Command;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuthorizationCommand<P> extends Command<P> {
 

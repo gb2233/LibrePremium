@@ -80,6 +80,11 @@ public class BungeeCordLibrePremium extends AuthenticLibrePremium<ProxiedPlayer,
         if (millis > 0) {
             bootstrap.getProxy().getScheduler().schedule(bootstrap, () -> getAuthorizationProvider().notifyUnauthorized(), 0, millis, TimeUnit.MILLISECONDS);
         }
+        var ipLoginFailureExpiryMinutes = getConfiguration().getTempbanCounterReset();
+
+        if (ipLoginFailureExpiryMinutes > 0) {
+            bootstrap.getProxy().getScheduler().schedule(bootstrap, () -> getAuthorizationProvider().performCleanup(), 0, ipLoginFailureExpiryMinutes, TimeUnit.MINUTES);
+        }
     }
 
     @Override
@@ -169,7 +174,6 @@ public class BungeeCordLibrePremium extends AuthenticLibrePremium<ProxiedPlayer,
             player.disconnect(serializer.serialize(getMessages().getMessage("kick-no-server")));
             return;
         }
-
         player.connect(serverInfo);
     }
 

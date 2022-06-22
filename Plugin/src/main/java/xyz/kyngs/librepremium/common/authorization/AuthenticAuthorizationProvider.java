@@ -8,22 +8,25 @@ import xyz.kyngs.librepremium.api.event.events.AuthenticatedEvent;
 import xyz.kyngs.librepremium.common.AuthenticHandler;
 import xyz.kyngs.librepremium.common.AuthenticLibrePremium;
 import xyz.kyngs.librepremium.common.event.events.AuthenticAuthenticatedEvent;
+import xyz.kyngs.librepremium.common.util.expiring.TimedCounter;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S> implements AuthorizationProvider<P> {
 
     private final Map<P, Boolean> unAuthorized;
+
+    private  Map<String, TimedCounter<String>> ipLoginFailureCounts;
     private final Set<P> awaiting2FA;
 
     public AuthenticAuthorizationProvider(AuthenticLibrePremium<P, S> plugin) {
         super(plugin);
-        unAuthorized = new HashMap<>();
-        awaiting2FA = new HashSet<>();
+        unAuthorized = new ConcurrentHashMap<>();
+        awaiting2FA = ConcurrentHashMap.newKeySet();
+        ipLoginFailureCounts = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -46,6 +49,11 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         var audience = platformHandle.getAudienceForPlayer(player);
 
         audience.clearTitle();
+        String IP = plugin.getPlatformHandle().getIP(player);
+        user.setIP(IP);
+        plugin.getDatabaseProvider().updateUser(user);
+        resetCount(IP,user.getLastNickname());
+
         plugin.getEventProvider().fire(AuthenticatedEvent.class, new AuthenticAuthenticatedEvent<>(user, player, plugin));
         plugin.authorize(player, user, audience);
     }
@@ -122,4 +130,42 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
             if (t != null || e != null) awaiting2FA.remove(player);
         });
     }
+
+    public boolean shouldTempbanIP(P player) {
+        if (plugin.getConfiguration().tempbanEnabled()){
+            TimedCounter<String> countsByName = ipLoginFailureCounts.get(plugin.getPlatformHandle().getIP(player));
+            if (countsByName != null) {
+                return countsByName.total() >= plugin.getConfiguration().getTempbanMaxTries();
+            }
+        }
+        return false;
+    }
+    public void performCleanup() {
+        for (TimedCounter<String> countsByIp : ipLoginFailureCounts.values()) {
+            countsByIp.removeExpiredEntries();
+        }
+        ipLoginFailureCounts.entrySet().removeIf(e -> e.getValue().isEmpty());
+    }
+
+
+    public void increaseCount(P player, String name) {
+        if (plugin.getConfiguration().tempbanEnabled()) {
+            TimedCounter<String> countsByName = ipLoginFailureCounts.computeIfAbsent(
+                plugin.getPlatformHandle().getIP(player), k -> new TimedCounter<>(plugin.getConfiguration().getTempbanCounterReset(), TimeUnit.MINUTES));
+            countsByName.increment(name);
+        }
+    }
+    public void resetCount(String address, String name) {
+        if (plugin.getConfiguration().tempbanEnabled()) {
+            TimedCounter<String> counter = ipLoginFailureCounts.get(address);
+            if (counter != null) {
+                counter.remove(name);
+            }
+        }
+    }
+
+    public boolean shouldBlockReg(P player) {
+        return plugin.getDatabaseProvider().getUsersByIP(plugin.getPlatformHandle().getIP(player)).size() >= plugin.getConfiguration().maxRegPerIP();
+    }
+
 }

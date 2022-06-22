@@ -9,6 +9,7 @@ import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 import java.util.UUID;
 
 @CommandAlias("premium|autologin")
+@CommandPermission("librepremium.player.premium")
 public class PremiumEnableCommand<P> extends PremiumCommand<P> {
 
     public PremiumEnableCommand(AuthenticLibrePremium<P, ?> plugin) {

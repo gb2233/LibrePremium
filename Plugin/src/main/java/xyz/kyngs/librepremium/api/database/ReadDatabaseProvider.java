@@ -1,6 +1,7 @@
 package xyz.kyngs.librepremium.api.database;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,6 +34,8 @@ public interface ReadDatabaseProvider {
      * @return The player, or null if the player does not exist.
      */
     User getByPremiumUUID(UUID uuid);
+
+    List<User> getUsersByIP(String ipAddress);
 
     /**
      * This method fetches all players. <b>Use this with caution.</b>

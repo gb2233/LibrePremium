@@ -2,6 +2,7 @@ package xyz.kyngs.librepremium.bungeecord;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import xyz.kyngs.librepremium.api.PlatformHandle;
@@ -69,5 +70,22 @@ public class BungeeCordPlatformHandle implements PlatformHandle<ProxiedPlayer, S
     @Override
     public Class<ProxiedPlayer> getPlayerClass() {
         return ProxiedPlayer.class;
+    }
+
+    @Override
+    public String getIP(ProxiedPlayer player) {
+        return player.getAddress().getAddress().getHostAddress();
+    }
+
+    @Override
+    public void tempbanIP(ProxiedPlayer player, TextComponent reason) {
+        var proxy = plugin.getBootstrap().getProxy();
+        proxy.getPluginManager().dispatchCommand(
+            proxy.getConsole(),
+            plugin.getConfiguration().getTempbanCommand()
+                .replace("%ip%",player.getAddress().getAddress().getHostAddress())
+                .replace("%duration%", plugin.getConfiguration().getTempbanLength())
+                .replace("%reason%",plugin.getMessages().getMessage("ban-error-password-wrong-multiple").content())
+            );
     }
 }

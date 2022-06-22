@@ -73,4 +73,17 @@ public interface PluginConfiguration {
 
     int minimumPasswordLength();
 
+    int maximumPasswordLength();
+
+    int maxRegPerIP();
+
+    boolean tempbanEnabled();
+
+    String getTempbanCommand();
+
+    String getTempbanLength();
+
+    int getTempbanMaxTries();
+
+    int getTempbanCounterReset();
 }
