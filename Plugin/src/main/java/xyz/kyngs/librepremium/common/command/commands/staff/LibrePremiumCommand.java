@@ -193,6 +193,8 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     public void onUserPremium(Audience audience, P player, String name) {
         var user = getUserOtherWiseInform(name);
 
+        checkPremiumEnabled();
+
         requireOffline(user);
 
         audience.sendMessage(getMessage("info-editing"));
@@ -210,6 +212,8 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandCompletion("@players")
     public void onUserCracked(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
+
+        checkPremiumEnabled();
 
         requireOffline(user);
 
@@ -235,7 +239,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
         }
 
         user = new User(
-                plugin.generateNewUUID(name, plugin.getUserOrThrowICA(name).uuid()),
+                plugin.generateNewUUID(name, plugin.getConfiguration().premiumEnabled() ? plugin.getUserOrThrowICA(name).uuid() : null),
                 null,
                 plugin.getDefaultCryptoProvider().createHash(password),
                 name,

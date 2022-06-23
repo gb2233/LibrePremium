@@ -265,6 +265,12 @@ public class DefaultConfiguration {
         ConfigurateHelper::getInt
     );
 
+    public static final ConfigurationKey<Boolean> PREMIUM_ENABLED = new ConfigurationKey<>(
+        "premium.enabled",
+        true,
+        "If premium nick checking and autologin is enabled",
+        ConfigurateHelper::getBoolean
+    );
     public static final ConfigurationKey<Boolean> TEMPBAN_ENABLED = new ConfigurationKey<>(
         "tempban.enabled",
         false,

@@ -43,6 +43,11 @@ public class Command<P> extends BaseCommand {
             throw new InvalidCommandArgument(getMessage("error-not-authorized"));
         }
     }
+    protected void checkPremiumEnabled() {
+        if (!getAuthorizationProvider().premiumEnabled()) {
+            throw new InvalidCommandArgument(getMessage("error-premium-disabled"));
+        }
+    }
 
     protected CryptoProvider getCrypto(HashedPassword password) {
         return plugin.getCryptoProvider(password.algo());

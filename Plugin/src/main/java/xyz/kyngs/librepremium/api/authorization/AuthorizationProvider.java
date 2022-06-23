@@ -18,6 +18,8 @@ public interface AuthorizationProvider<P> {
      */
     boolean isAuthorized(P player);
 
+    boolean premiumEnabled();
+
     /**
      * Checks whether the player is in the process of enabling 2FA.
      *

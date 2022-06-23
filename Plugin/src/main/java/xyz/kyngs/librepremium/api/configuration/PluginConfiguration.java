@@ -77,6 +77,8 @@ public interface PluginConfiguration {
 
     int maxRegPerIP();
 
+    boolean premiumEnabled();
+
     boolean tempbanEnabled();
 
     String getTempbanCommand();

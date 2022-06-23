@@ -15,6 +15,7 @@ import xyz.kyngs.librepremium.common.event.events.AuthenticPremiumLoginSwitchEve
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class AuthenticListeners<Plugin extends AuthenticLibrePremium<P, S>, P, S> {
@@ -22,12 +23,18 @@ public class AuthenticListeners<Plugin extends AuthenticLibrePremium<P, S>, P, S
     @SuppressWarnings("RegExpSimplifiable") //I don't believe you
     private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]*");
 
+    protected Function<String,PreLoginResult> preLoginFunction;
+
     protected final Plugin plugin;
     protected final PlatformHandle<P, S> platformHandle;
 
     public AuthenticListeners(Plugin plugin) {
         this.plugin = plugin;
         platformHandle = plugin.getPlatformHandle();
+        if (plugin.getConfiguration().premiumEnabled())
+            preLoginPremiumOn();
+        else
+            preLoginPremiumOff();
     }
 
     protected void onPostLogin(P player) {
@@ -35,7 +42,7 @@ public class AuthenticListeners<Plugin extends AuthenticLibrePremium<P, S>, P, S
         if (plugin.fromFloodgate(uuid)) return;
 
         var user = plugin.getDatabaseProvider().getByUUID(uuid);
-        if (user.autoLoginEnabled()) {
+        if (user.autoLoginEnabled() && plugin.getConfiguration().premiumEnabled()) {
             plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(plugin.getMessages().getMessage("info-automatically-logged-in"));
             plugin.getEventProvider().fire(AuthenticatedEvent.class, new AuthenticAuthenticatedEvent<>(user, player, plugin));
             return;
@@ -47,8 +54,30 @@ public class AuthenticListeners<Plugin extends AuthenticLibrePremium<P, S>, P, S
         plugin.onExit(player);
         plugin.getAuthorizationProvider().onExit(player);
     }
-
     protected PreLoginResult onPreLogin(String username) {
+        return preLoginFunction.apply(username);
+    }
+    private void preLoginPremiumOff() {
+        preLoginFunction = username -> {
+            User user;
+            try {
+                user = checkAndValidateByName(username, null, true);
+            } catch (InvalidCommandArgument e) {
+                return new PreLoginResult(PreLoginState.DENIED, e.getUserFuckUp());
+            }
+
+            //noinspection ConstantConditions //kyngs: There's no way IntelliJ is right
+            if (user.getPremiumUUID() != null) {
+                user.setPremiumUUID(null);
+                plugin.getEventProvider().fire(PremiumLoginSwitchEvent.class, new AuthenticPremiumLoginSwitchEvent<>(user, null, plugin));
+            }
+
+            plugin.getDatabaseProvider().updateUser(user);
+
+            return new PreLoginResult(PreLoginState.FORCE_OFFLINE, null);
+        };
+    }
+    private void preLoginPremiumOn() { preLoginFunction = username -> {
         if (username.length() > 16 || !NAME_PATTERN.matcher(username).matches()) {
             return new PreLoginResult(PreLoginState.DENIED, plugin.getMessages().getMessage("kick-illegal-username"));
         }
@@ -127,6 +156,7 @@ public class AuthenticListeners<Plugin extends AuthenticLibrePremium<P, S>, P, S
         }
 
         return new PreLoginResult(PreLoginState.FORCE_OFFLINE, null);
+    };
     }
 
     private User checkAndValidateByName(String username, @Nullable UUID premiumID, boolean generate) throws InvalidCommandArgument {

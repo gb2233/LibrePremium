@@ -33,6 +33,10 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
     public boolean isAuthorized(P player) {
         return !unAuthorized.containsKey(player);
     }
+    @Override
+    public boolean premiumEnabled() {
+        return plugin.getConfiguration().premiumEnabled();
+    }
 
     @Override
     public boolean isAwaiting2FA(P player) {

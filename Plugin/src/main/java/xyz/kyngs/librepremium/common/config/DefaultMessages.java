@@ -279,10 +279,17 @@ public class DefaultMessages {
     );
 
     public static final ConfigurationKey<String> ERROR_UNKNOWN = new ConfigurationKey<>(
-            "error-unknown",
-            "An unknown error occurred! Check console for further information.",
-            "This message is displayed when an unknown error occurs.",
-            ConfigurateHelper::getString
+        "error-unknown",
+        "An unknown error occurred! Check console for further information.",
+        "This message is displayed when an unknown error occurs.",
+        ConfigurateHelper::getString
+    );
+
+    public static final ConfigurationKey<String> ERROR_PREMIUM_DISABLED = new ConfigurationKey<>(
+        "error-premium-disabled",
+        "Premium logins are disabled, this action is unavailable",
+        "This message is displayed when premium login is disabled in config.",
+        ConfigurateHelper::getString
     );
 
     public static final ConfigurationKey<String> ERROR_UNKNOWN_USER = new ConfigurationKey<>(

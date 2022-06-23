@@ -194,6 +194,10 @@ public class HoconPluginConfiguration implements PluginConfiguration {
         return get(MAX_REG_PER_IP);
     }
     @Override
+    public boolean premiumEnabled() {
+        return get(PREMIUM_ENABLED);
+    }
+    @Override
     public boolean tempbanEnabled() {
         return get(TEMPBAN_ENABLED);
     }
