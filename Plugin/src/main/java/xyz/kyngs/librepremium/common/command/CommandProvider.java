@@ -1,6 +1,7 @@
 package xyz.kyngs.librepremium.common.command;
 
 import co.aikar.commands.CommandManager;
+import co.aikar.commands.CommandReplacements;
 import co.aikar.commands.MessageKeys;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -38,7 +39,6 @@ public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
         limiter = new RateLimiter<>(1, TimeUnit.SECONDS);
 
         manager = plugin.provideManager();
-
         var locales = manager.getLocales();
 
         var localeMap = new HashMap<String, String>();
@@ -48,11 +48,29 @@ public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
         localeMap.put("acf-core.invalid_syntax", getMessageAsString("error-invalid-syntax"));
         localeMap.put("acf-core.unknown_command", getMessageAsString("error-unknown-command"));
 
+        localeMap.put("librepremium.desc_login", getMessageAsString("librepremium-desc_login"));
+        localeMap.put("librepremium.desc_register", getMessageAsString("librepremium-desc_register"));
+        localeMap.put("librepremium.desc_changepass", getMessageAsString("librepremium-desc_changepass"));
+        localeMap.put("librepremium.desc_2fa", getMessageAsString("librepremium-desc_2fa"));
+        localeMap.put("librepremium.desc_premiumenable", getMessageAsString("librepremium-desc_premiumenable"));
+        localeMap.put("librepremium.desc_premiumdisable", getMessageAsString("librepremium-desc_premiumdisable"));
+        localeMap.put("librepremium.desc_premiumconfirm", getMessageAsString("librepremium-desc_premiumconfirm"));
+        localeMap.put("librepremium.desc_reloadconf", getMessageAsString("librepremium-desc_reloadconf"));
+        localeMap.put("librepremium.desc_reloadmsg", getMessageAsString("librepremium-desc_reloadmsg"));
+        localeMap.put("librepremium.desc_userinfo", getMessageAsString("librepremium-desc_userinfo"));
+        localeMap.put("librepremium.desc_usermigrate", getMessageAsString("librepremium-desc_usermigrate"));
+        localeMap.put("librepremium.desc_userunreg", getMessageAsString("librepremium-desc_userunreg"));
+        localeMap.put("librepremium.desc_userdelete", getMessageAsString("librepremium-desc_userdelete"));
+        localeMap.put("librepremium.desc_userpremium", getMessageAsString("librepremium-desc_userpremium"));
+        localeMap.put("librepremium.desc_usercracked", getMessageAsString("librepremium-desc_usercracked"));
+        localeMap.put("librepremium.desc_userreg", getMessageAsString("librepremium-desc_userreg"));
+        localeMap.put("librepremium.desc_userlogin", getMessageAsString("librepremium-desc_userlogin"));
+        localeMap.put("librepremium.desc_2faoff", getMessageAsString("librepremium-desc_2faoff"));
         locales.addMessageStrings(locales.getDefaultLocale(), localeMap);
 
         var contexts = manager.getCommandContexts();
 
-        contexts.registerIssuerAwareContext(User.class, context -> {
+        contexts.registerIssuerOnlyContext(User.class, context -> {
             var player = plugin.getPlayerFromIssuer(context.getIssuer());
 
             if (player == null)
@@ -65,14 +83,14 @@ public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
             return plugin.getDatabaseProvider().getByUUID(uuid);
         });
 
-        contexts.registerIssuerAwareContext(Audience.class, context -> {
+        contexts.registerIssuerOnlyContext(Audience.class, context -> {
             if (limiter.tryAndLimit(context.getIssuer().getUniqueId()))
                 throw new xyz.kyngs.librepremium.common.command.InvalidCommandArgument(plugin.getMessages().getMessage("error-throttle"));
             return plugin.getAudienceFromIssuer(context.getIssuer());
         });
 
         // Thanks type erasure
-        contexts.registerIssuerAwareContext(Object.class, context -> {
+        contexts.registerIssuerOnlyContext(Object.class, context -> {
             var player = plugin.getPlayerFromIssuer(context.getIssuer());
 
             if (player == null)
@@ -81,7 +99,7 @@ public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
             return player;
         });
 
-        contexts.registerIssuerAwareContext(UUID.class, context -> {
+        contexts.registerIssuerOnlyContext(UUID.class, context -> {
             var player = plugin.getPlayerFromIssuer(context.getIssuer());
 
             if (player == null)
@@ -109,6 +127,8 @@ public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
         confirmCache = Caffeine.newBuilder()
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .build();
+
+        manager.enableUnstableAPI("help");
 
         manager.registerCommand(new LoginCommand<>(plugin));
         manager.registerCommand(new RegisterCommand<>(plugin));

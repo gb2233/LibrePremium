@@ -47,7 +47,9 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
-
+compileJava {
+    options.compilerArgs += ["-parameters"]
+}
 dependencies {
     //Velocity
     annotationProcessor 'com.velocitypowered:velocity-api:3.1.1'
@@ -82,3 +84,4 @@ dependencies {
     implementation 'org.bstats:bstats-velocity:3.0.0'
     implementation 'org.bstats:bstats-bungeecord:3.0.0'
 }
+build.dependsOn shadowJar

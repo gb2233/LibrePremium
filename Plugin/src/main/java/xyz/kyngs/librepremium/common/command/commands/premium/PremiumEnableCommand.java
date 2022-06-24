@@ -1,5 +1,6 @@
 package xyz.kyngs.librepremium.common.command.commands.premium;
 
+import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import net.kyori.adventure.audience.Audience;
 import xyz.kyngs.librepremium.api.database.User;
@@ -8,17 +9,17 @@ import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 
 import java.util.UUID;
 
-@CommandAlias("premium|autologin")
-@CommandPermission("librepremium.player.premium")
 public class PremiumEnableCommand<P> extends PremiumCommand<P> {
 
     public PremiumEnableCommand(AuthenticLibrePremium<P, ?> plugin) {
         super(plugin);
     }
 
-    @Default
+    @CommandAlias("premium|autologin")
     @Syntax("<password>")
     @CommandCompletion("password")
+    @Description("{@@librepremium.desc_premiumenable}")
+    @CommandPermission("librepremium.player.premium")
     public void onPremium(Audience sender, UUID uuid, P player, User user, @Single String password) {
         checkAuthorized(player);
         checkCracked(user);

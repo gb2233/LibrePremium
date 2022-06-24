@@ -1,7 +1,9 @@
 package xyz.kyngs.librepremium.common.command.commands.authorization;
 
+import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
 import xyz.kyngs.librepremium.api.database.User;
 import xyz.kyngs.librepremium.common.AuthenticLibrePremium;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
@@ -17,6 +19,7 @@ public class LoginCommand<P> extends AuthorizationCommand<P> {
     @Default
     @Syntax("<password> [2fa_code]")
     @CommandCompletion("password")
+    @Description("{@@librepremium.desc_login}")
     public void onLogin(Audience sender, P player, User user, @Single String password, @Optional Integer code) {
         checkUnauthorized(player);
         if (!user.isRegistered()) throw new InvalidCommandArgument(getMessage("error-not-registered"));

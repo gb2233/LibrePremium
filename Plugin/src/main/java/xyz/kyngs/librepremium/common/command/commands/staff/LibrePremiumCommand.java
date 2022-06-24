@@ -1,9 +1,7 @@
 package xyz.kyngs.librepremium.common.command.commands.staff;
 
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.CommandHelp;
+import co.aikar.commands.annotation.*;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import xyz.kyngs.librepremium.api.configuration.CorruptedConfigurationException;
@@ -29,9 +27,10 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     public LibrePremiumCommand(AuthenticLibrePremium<P, ?> plugin) {
         super(plugin);
     }
-
     @Subcommand("reload configuration")
+    @Syntax("")
     @CommandPermission("librepremium.reload.configuration")
+    @Description("{@@librepremium.desc_reloadconf}")
     public void onReloadConfiguration(Audience audience) {
 
         audience.sendMessage(getMessage("info-reloading"));
@@ -53,7 +52,9 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     }
 
     @Subcommand("reload messages")
+    @Syntax("")
     @CommandPermission("librepremium.reload.messages")
+    @Description("{@@librepremium.desc_reloadmsg}")
     public void onReloadMessages(Audience audience) {
 
         audience.sendMessage(getMessage("info-reloading"));
@@ -78,6 +79,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.info")
     @Syntax("<name>")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_userinfo}")
     public void onUserInfo(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
         List<User> alts = getUserAlts(user.getIP());
@@ -99,6 +101,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.private.info")
     @Syntax("<name>")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_userinfo}")
     public void onUserPrivateInfo(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
         List<User> alts = getUserAlts(user.getIP());
@@ -130,6 +133,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.migrate")
     @Syntax("<name> <newName>")
     @CommandCompletion("@players newName")
+    @Description("{@@librepremium.desc_usermigrate}")
     public void onUserMigrate(Audience audience, P player, String name, String newName) {
         var user = getUserOtherWiseInform(name);
         var colliding = getDatabaseProvider().getByName(newName);
@@ -157,6 +161,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.unregister")
     @Syntax("<name>")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_userunreg}")
     public void onUserUnregister(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
 
@@ -174,6 +179,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.delete")
     @Syntax("<name>")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_userdelete}")
     public void onUserDelete(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
 
@@ -190,6 +196,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.premium")
     @Syntax("<name>")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_userpremium}")
     public void onUserPremium(Audience audience, P player, String name) {
         var user = getUserOtherWiseInform(name);
 
@@ -210,6 +217,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.cracked")
     @Syntax("<name>")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_usercracked}")
     public void onUserCracked(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
 
@@ -229,6 +237,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.register")
     @Syntax("<name> <password>")
     @CommandCompletion("@players password")
+    @Description("{@@librepremium.desc_userreg}")
     public void onUserRegister(Audience audience, String name, String password) {
         audience.sendMessage(getMessage("info-registering"));
 
@@ -259,6 +268,7 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     @CommandPermission("librepremium.user.login")
     @Syntax("<name>")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_userlogin}")
     public void onUserLogin(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
 
@@ -274,9 +284,10 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
     }
 
     @Subcommand("user 2faoff")
-    @CommandPermission("librepremium.user.2faoff")
     @Syntax("<name>")
+    @CommandPermission("librepremium.user.2faoff")
     @CommandCompletion("@players")
+    @Description("{@@librepremium.desc_2faoff}")
     public void onUser2FAOff(Audience audience, String name) {
         var user = getUserOtherWiseInform(name);
 
@@ -289,4 +300,8 @@ public class LibrePremiumCommand<P> extends StaffCommand<P> {
         audience.sendMessage(getMessage("info-edited"));
     }
 
+    @HelpCommand
+    public void doHelp(CommandHelp help) {
+        help.showHelp();
+    }
 }

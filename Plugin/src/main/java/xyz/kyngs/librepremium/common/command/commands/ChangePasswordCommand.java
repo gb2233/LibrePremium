@@ -1,5 +1,6 @@
 package xyz.kyngs.librepremium.common.command.commands;
 
+import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import net.kyori.adventure.audience.Audience;
 import xyz.kyngs.librepremium.api.database.User;
@@ -9,16 +10,16 @@ import xyz.kyngs.librepremium.common.command.Command;
 import xyz.kyngs.librepremium.common.command.InvalidCommandArgument;
 import xyz.kyngs.librepremium.common.event.events.AuthenticPasswordChangeEvent;
 
-@CommandAlias("changepassword|changepass|passwd|passch|changepw")
-@CommandPermission("librepremium.player.changepassword")
 public class ChangePasswordCommand<P> extends Command<P> {
     public ChangePasswordCommand(AuthenticLibrePremium<P, ?> plugin) {
         super(plugin);
     }
 
-    @Default
+    @CommandAlias("changepassword|changepass|passwd|passch|changepw")
     @Syntax("<oldPassword> <newPassword>")
     @CommandCompletion("oldPassword newPassword")
+    @Description("{@@librepremium.desc_changepass}")
+    @CommandPermission("librepremium.player.changepassword")
     public void onPasswordChange(Audience sender, P player, User user, String oldPass, @Single String newPass) {
         checkAuthorized(player);
 
@@ -44,5 +45,4 @@ public class ChangePasswordCommand<P> extends Command<P> {
 
         plugin.getEventProvider().fire(PasswordChangeEvent.class, new AuthenticPasswordChangeEvent<>(user, player, plugin, hashed));
     }
-
 }

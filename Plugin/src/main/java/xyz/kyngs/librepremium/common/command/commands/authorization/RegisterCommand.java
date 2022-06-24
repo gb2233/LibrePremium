@@ -1,5 +1,6 @@
 package xyz.kyngs.librepremium.common.command.commands.authorization;
 
+import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import net.kyori.adventure.audience.Audience;
 import xyz.kyngs.librepremium.api.database.User;
@@ -16,6 +17,7 @@ public class RegisterCommand<P> extends AuthorizationCommand<P> {
     @Default
     @Syntax("<password> <passwordRepeat>")
     @CommandCompletion("password password")
+    @Description("{@@librepremium.desc_register}")
     public void onRegister(Audience sender, P player, User user, @Single String password, String passwordRepeat) {
         checkUnauthorized(player);
 

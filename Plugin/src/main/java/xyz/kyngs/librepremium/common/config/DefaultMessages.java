@@ -557,10 +557,120 @@ public class DefaultMessages {
     );
 
     public static final ConfigurationKey<String> TOTP_WRONG_VERSION = new ConfigurationKey<>(
-            "totp-wrong-version",
-            "You must connect with client version %low% - %high%, in order to enable 2FA. You can then connect back with old version again.",
-            "This message is displayed when the player attempts to enable 2FA with an old client.",
-            ConfigurateHelper::getString
+        "totp-wrong-version",
+        "You must connect with client version %low% - %high%, in order to enable 2FA. You can then connect back with old version again.",
+        "This message is displayed when the player attempts to enable 2FA with an old client.",
+        ConfigurateHelper::getString
+    );
+
+
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_login = new ConfigurationKey<>(
+        "librepremium-desc_login",
+        "Command used for logging in",
+        "Command description for login command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_register = new ConfigurationKey<>(
+        "librepremium-desc_register",
+        "Command used for registering",
+        "Command description for register command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_changepass = new ConfigurationKey<>(
+        "librepremium-desc_changepass",
+        "Command used for changing your password",
+        "Command description for changepass command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_2fa = new ConfigurationKey<>(
+        "librepremium-desc_2fa",
+        "Command used for enabling 2fa authentication",
+        "Command description for 2fa command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_premiumenable = new ConfigurationKey<>(
+        "librepremium-desc_premiumenable",
+        "Command used for enabling premium login",
+        "Command description for premiumenable command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_premiumdisable = new ConfigurationKey<>(
+        "librepremium-desc_premiumdisable",
+        "Command used for disabling premium login",
+        "Command description for premiumdisable command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_premiumconfirm = new ConfigurationKey<>(
+        "librepremium-desc_premiumconfirm",
+        "Command used for confirmation of enabling premium login",
+        "Command description for premiumconfirm command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_reloadconf = new ConfigurationKey<>(
+        "librepremium-desc_reloadconf",
+        "Command used for reloading the config",
+        "Command description for reload configuration command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_reloadmsg = new ConfigurationKey<>(
+        "librepremium-desc_reloadmsg",
+        "Command used for reloading the messages",
+        "Command description for reload messages command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_userinfo = new ConfigurationKey<>(
+        "librepremium-desc_userinfo",
+        "Command used for getting player information",
+        "Command description for user info command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_usermigrate = new ConfigurationKey<>(
+        "librepremium-desc_usermigrate",
+        "Command used for migrating users to new UUID",
+        "Command description for user migrate command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_userunreg = new ConfigurationKey<>(
+        "librepremium-desc_userunreg",
+        "Command used for unregistering a player",
+        "Command description for user unregister command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_userdelete = new ConfigurationKey<>(
+        "librepremium-desc_userdelete",
+        "Command used for deleting a player",
+        "Command description for user delete command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_userpremium = new ConfigurationKey<>(
+        "librepremium-desc_userpremium",
+        "Command used for enabling premium login for a player",
+        "Command description for user premium command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_usercracked = new ConfigurationKey<>(
+        "librepremium-desc_usercracked",
+        "Command used for disabling premium login for a player",
+        "Command description for user cracked command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_userreg = new ConfigurationKey<>(
+        "librepremium-desc_userreg",
+        "Command used for registering an user",
+        "Command description for user register command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_userlogin = new ConfigurationKey<>(
+        "librepremium-desc_userlogin",
+        "Command used for force logging in a user",
+        "Command description for user login command",
+        ConfigurateHelper::getString
+    );
+    public static final ConfigurationKey<String> LIBREPREMIUM_DESC_desc_2faoff = new ConfigurationKey<>(
+        "librepremium-desc_2faoff",
+        "Command used for disabling 2fa for a player",
+        "Command description for 2faoff command",
+        ConfigurateHelper::getString
     );
 
 
